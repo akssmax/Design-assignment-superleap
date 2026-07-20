@@ -1,0 +1,351 @@
+"use client";
+
+import Link from "next/link";
+import type { ReactNode } from "react";
+import {
+  motion,
+  useReducedMotion,
+  type Transition,
+  type Variants,
+} from "framer-motion";
+
+export const logoAnimations = [
+  "none",
+  "leap",
+  "assemble",
+  "wave",
+  "glint",
+] as const;
+
+export type LogoAnimation = (typeof logoAnimations)[number];
+
+type Variant = "full" | "mark" | "wordmark";
+
+type Props = {
+  variant?: Variant;
+  href?: string | null;
+  className?: string;
+  /** Logo height in px (full lockup width scales with viewBox 144×34) */
+  height?: number;
+  /**
+   * Mark microinteraction preset.
+   * - `none` — static
+   * - `leap` — segments spring upward (mount + hover)
+   * - `assemble` — pieces fly in once
+   * - `wave` — soft idle bob
+   * - `glint` — mint brightness flash on hover
+   */
+  animation?: LogoAnimation;
+};
+
+const MARK = {
+  top: "M13.9922 7.8103H18.6562L23.3201 10.1423V12.4743H13.9922V7.8103Z",
+  mid: "M23.3199 21.8025H13.992L4.66406 14.8066V12.4746H13.992L23.3199 19.4706V21.8025Z",
+  bot: "M13.992 26.4664H9.32803L4.66406 24.1344V21.8024H13.992V26.4664Z",
+} as const;
+
+const spring: Transition = { type: "spring", stiffness: 420, damping: 22, mass: 0.6 };
+const softSpring: Transition = { type: "spring", stiffness: 280, damping: 28 };
+
+const leapContainer: Variants = {
+  rest: {},
+  hover: { transition: { staggerChildren: 0.05, delayChildren: 0.02 } },
+};
+
+const leapTop: Variants = {
+  rest: { y: 0, rotate: 0 },
+  hover: { y: -3.2, rotate: -2, transition: spring },
+};
+
+const leapMid: Variants = {
+  rest: { y: 0, x: 0 },
+  hover: { y: -1.6, x: 0.8, transition: spring },
+};
+
+const leapBot: Variants = {
+  rest: { y: 0 },
+  hover: { y: 0.4, transition: softSpring },
+};
+
+const assembleContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+
+const assembleTop: Variants = {
+  hidden: { opacity: 0, y: 10, x: -6 },
+  show: { opacity: 1, y: 0, x: 0, transition: spring },
+};
+
+const assembleMid: Variants = {
+  hidden: { opacity: 0, y: 4, x: 10 },
+  show: { opacity: 1, y: 0, x: 0, transition: spring },
+};
+
+const assembleBot: Variants = {
+  hidden: { opacity: 0, y: -8, x: -4 },
+  show: { opacity: 1, y: 0, x: 0, transition: spring },
+};
+
+const waveTop: Variants = {
+  animate: {
+    y: [0, -2.2, 0],
+    transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
+  },
+};
+
+const waveMid: Variants = {
+  animate: {
+    y: [0, -1.4, 0],
+    transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.15 },
+  },
+};
+
+const waveBot: Variants = {
+  animate: {
+    y: [0, -0.8, 0],
+    transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.3 },
+  },
+};
+
+const glintFill: Variants = {
+  rest: { fill: "#4BB793" },
+  hover: {
+    fill: ["#4BB793", "#E3FFCC", "#4BB793"],
+    transition: { duration: 0.7, times: [0, 0.45, 1] },
+  },
+};
+
+/** Official Superleap monogram — from superleap.com `_astro/logo.*.js` */
+export function Monogram({
+  className = "",
+  title = "Superleap",
+  animation = "none",
+}: {
+  className?: string;
+  title?: string;
+  animation?: LogoAnimation;
+}) {
+  return (
+    <AnimatedMark
+      className={className}
+      title={title}
+      animation={animation}
+      viewBox="4 7 20 20"
+      showWordmark={false}
+    />
+  );
+}
+
+/** Official Superleap wordmark paths (from site SVG) */
+function WordmarkPaths() {
+  return (
+    <>
+      <path d="M124.762 28.7993V10.621H128.164V13.1552L127.848 12.4242C128.285 11.7581 128.876 11.2465 129.621 10.889C130.382 10.5154 131.249 10.3286 132.221 10.3286C133.485 10.3286 134.626 10.6372 135.647 11.2546C136.667 11.8719 137.477 12.7085 138.076 13.7644C138.675 14.8041 138.975 15.9738 138.975 17.2733C138.975 18.5568 138.675 19.7264 138.076 20.7823C137.493 21.8383 136.692 22.6749 135.671 23.2922C134.65 23.9095 133.492 24.2182 132.197 24.2182C131.29 24.2182 130.447 24.0557 129.67 23.7308C128.909 23.3897 128.293 22.8942 127.823 22.2444L128.406 21.489V28.7993H124.762ZM131.759 20.9285C132.44 20.9285 133.039 20.7742 133.557 20.4655C134.076 20.1569 134.48 19.7264 134.772 19.174C135.064 18.6217 135.21 17.9882 135.21 17.2733C135.21 16.5586 135.064 15.9332 134.772 15.397C134.48 14.8447 134.076 14.4142 133.557 14.1056C133.039 13.7807 132.44 13.6182 131.759 13.6182C131.111 13.6182 130.528 13.7726 130.01 14.0812C129.508 14.3898 129.111 14.8203 128.819 15.3727C128.544 15.9251 128.406 16.5586 128.406 17.2733C128.406 17.9882 128.544 18.6217 128.819 19.174C129.111 19.7264 129.508 20.1569 130.01 20.4655C130.528 20.7742 131.111 20.9285 131.759 20.9285Z" />
+      <path d="M115.992 24.2182C115.037 24.2182 114.211 24.0638 113.514 23.7552C112.817 23.4465 112.283 23.0079 111.911 22.4394C111.538 21.8545 111.352 21.1641 111.352 20.3681C111.352 19.6208 111.522 18.9629 111.862 18.3943C112.202 17.8095 112.72 17.3221 113.417 16.9323C114.13 16.5424 115.012 16.2662 116.065 16.1038L120.123 15.4458V18.1262L116.721 18.7355C116.203 18.8329 115.806 19.0035 115.53 19.2472C115.255 19.4746 115.118 19.8077 115.118 20.2462C115.118 20.6524 115.272 20.9692 115.579 21.1966C115.887 21.424 116.267 21.5378 116.721 21.5378C117.32 21.5378 117.847 21.4078 118.3 21.1479C118.754 20.888 119.102 20.5387 119.345 20.1C119.604 19.6452 119.734 19.1497 119.734 18.6136V15.1534C119.734 14.6498 119.532 14.2275 119.126 13.8863C118.738 13.5452 118.204 13.3746 117.523 13.3746C116.875 13.3746 116.3 13.5533 115.798 13.9107C115.312 14.268 114.956 14.7392 114.729 15.324L111.813 13.935C112.072 13.1877 112.485 12.5461 113.052 12.01C113.619 11.4739 114.3 11.0596 115.093 10.7673C115.887 10.4748 116.754 10.3286 117.693 10.3286C118.81 10.3286 119.799 10.5317 120.657 10.9378C121.516 11.344 122.18 11.9125 122.649 12.6436C123.136 13.3583 123.378 14.1949 123.378 15.1534V23.9258H119.977V21.7814L120.803 21.6352C120.414 22.22 119.985 22.7074 119.515 23.0973C119.045 23.4709 118.519 23.7471 117.936 23.9258C117.353 24.1207 116.705 24.2182 115.992 24.2182Z" />
+      <path d="M104.284 24.2182C102.875 24.2182 101.652 23.9095 100.615 23.2922C99.5783 22.6586 98.7766 21.8139 98.21 20.758C97.6427 19.702 97.3594 18.5324 97.3594 17.249C97.3594 15.9169 97.6509 14.731 98.2339 13.6913C98.8332 12.6517 99.6354 11.8313 100.639 11.2302C101.644 10.6291 102.778 10.3286 104.041 10.3286C105.094 10.3286 106.025 10.4992 106.835 10.8404C107.645 11.1653 108.326 11.6282 108.876 12.2293C109.443 12.8304 109.872 13.5289 110.164 14.3249C110.455 15.1047 110.601 15.9576 110.601 16.8835C110.601 17.1434 110.585 17.4034 110.553 17.6633C110.536 17.907 110.496 18.1181 110.431 18.2968H100.494V15.6164H108.366L106.641 16.8835C106.803 16.185 106.795 15.5676 106.616 15.0316C106.438 14.4793 106.122 14.0488 105.669 13.7401C105.232 13.4152 104.689 13.2527 104.041 13.2527C103.409 13.2527 102.867 13.4071 102.413 13.7157C101.96 14.0244 101.619 14.4793 101.393 15.0803C101.166 15.6814 101.077 16.4124 101.126 17.2734C101.061 18.0207 101.149 18.6786 101.393 19.2472C101.636 19.8158 102.008 20.2625 102.51 20.5874C103.013 20.8961 103.62 21.0504 104.333 21.0504C104.98 21.0504 105.531 20.9204 105.985 20.6605C106.455 20.4006 106.819 20.0432 107.078 19.5883L109.993 20.9773C109.735 21.6271 109.321 22.1957 108.755 22.683C108.204 23.1704 107.548 23.5521 106.786 23.8283C106.025 24.0882 105.191 24.2182 104.284 24.2182Z" />
+      <path d="M92.6973 23.924V5.47769H96.3416V23.924H92.6973Z" />
+      <path d="M83.3691 23.9252V10.6205H86.7709V13.8126L86.5278 13.3497C86.8193 12.2287 87.2974 11.4734 87.9614 11.0834C88.6418 10.6773 89.4434 10.4743 90.3668 10.4743H91.144V13.6421H90.0019C89.1111 13.6421 88.3905 13.9183 87.8396 14.4706C87.2892 15.0067 87.0135 15.7702 87.0135 16.7611V23.9252H83.3691Z" />
+      <path d="M75.7178 24.2182C74.3081 24.2182 73.0856 23.9095 72.049 23.2922C71.0119 22.6586 70.2102 21.8139 69.6436 20.758C69.0763 19.702 68.793 18.5324 68.793 17.249C68.793 15.9169 69.0845 14.731 69.6675 13.6913C70.2668 12.6516 71.069 11.8313 72.0729 11.2302C73.0774 10.6291 74.2113 10.3286 75.4747 10.3286C76.5276 10.3286 77.4586 10.4992 78.269 10.8403C79.0788 11.1652 79.7591 11.6282 80.3095 12.2293C80.8767 12.8303 81.3058 13.5289 81.5973 14.3249C81.8888 15.1047 82.0346 15.9575 82.0346 16.8835C82.0346 17.1434 82.0182 17.4034 81.9862 17.6633C81.9698 17.9069 81.9296 18.1181 81.8649 18.2968H71.9272V15.6164H79.7993L78.0743 16.8835C78.2363 16.185 78.2282 15.5676 78.0498 15.0316C77.872 14.4792 77.556 14.0487 77.1024 13.74C76.6652 13.4151 76.1224 13.2527 75.4747 13.2527C74.8427 13.2527 74.3005 13.407 73.847 13.7157C73.3934 14.0244 73.0529 14.4792 72.8261 15.0803C72.5993 15.6814 72.5101 16.4124 72.5591 17.2733C72.4944 18.0206 72.583 18.6785 72.8261 19.2471C73.0692 19.8157 73.4418 20.2625 73.9437 20.5874C74.4463 20.896 75.0532 21.0503 75.7662 21.0503C76.4139 21.0503 76.9648 20.9204 77.4184 20.6605C77.8883 20.4005 78.2527 20.0432 78.5115 19.5883L81.4271 20.9772C81.1682 21.627 80.7549 22.1956 80.1882 22.683C79.6373 23.1704 78.9814 23.5521 78.22 23.8283C77.4586 24.0882 76.6244 24.2182 75.7178 24.2182Z" />
+      <path d="M53.6367 28.7993V10.621H57.0383V13.1553L56.7224 12.4243C57.1598 11.7582 57.751 11.2465 58.496 10.889C59.2574 10.5155 60.1237 10.3286 61.0956 10.3286C62.3595 10.3286 63.501 10.6373 64.5218 11.2546C65.5421 11.8719 66.3519 12.7085 66.9512 13.7644C67.5505 14.8042 67.8502 15.9738 67.8502 17.2734C67.8502 18.5568 67.5505 19.7264 66.9512 20.7823C66.3682 21.8383 65.5666 22.6749 64.5457 23.2922C63.5255 23.9095 62.3671 24.2182 61.0717 24.2182C60.1645 24.2182 59.3221 24.0557 58.5444 23.7308C57.7834 23.3897 57.1679 22.8942 56.6981 22.2444L57.2813 21.489V28.7993H53.6367ZM60.6344 20.9285C61.3148 20.9285 61.9141 20.7742 62.4324 20.4656C62.9507 20.1569 63.3553 19.7264 63.6468 19.1741C63.9388 18.6217 64.0846 17.9882 64.0846 17.2734C64.0846 16.5586 63.9388 15.9332 63.6468 15.3971C63.3553 14.8447 62.9507 14.4142 62.4324 14.1056C61.9141 13.7807 61.3148 13.6182 60.6344 13.6182C59.9861 13.6182 59.4031 13.7726 58.8848 14.0812C58.3829 14.3899 57.9859 14.8204 57.6943 15.3728C57.4189 15.9251 57.2813 16.5586 57.2813 17.2734C57.2813 17.9882 57.4189 18.6217 57.6943 19.1741C57.9859 19.7264 58.3829 20.1569 58.8848 20.4656C59.4031 20.7742 59.9861 20.9285 60.6344 20.9285Z" />
+      <path d="M45.256 24.2171C44.1869 24.2171 43.2718 23.9897 42.5105 23.5348C41.7654 23.0637 41.1984 22.4139 40.8097 21.5854C40.4209 20.7569 40.2266 19.7903 40.2266 18.6857V10.62H43.8711V18.3932C43.8711 18.8969 43.9683 19.3436 44.1627 19.7335C44.3732 20.1071 44.6648 20.3995 45.0373 20.6107C45.4099 20.8219 45.831 20.9275 46.3007 20.9275C46.7867 20.9275 47.2078 20.8219 47.5642 20.6107C47.9367 20.3995 48.2202 20.1071 48.4146 19.7335C48.6251 19.3436 48.7304 18.8969 48.7304 18.3932V10.62H52.375V23.9247H48.9734V21.293L49.1678 21.8778C48.86 22.6738 48.3579 23.2668 47.6614 23.6567C46.9811 24.0303 46.1793 24.2171 45.256 24.2171Z" />
+      <path d="M33.9857 24.2182C32.5279 24.2182 31.2563 23.877 30.1711 23.1948C29.102 22.4962 28.3731 21.5621 27.9844 20.3925L30.657 19.1253C30.9972 19.8401 31.4588 20.4006 32.0419 20.8067C32.6251 21.2129 33.273 21.4159 33.9857 21.4159C34.504 21.4159 34.9009 21.3103 35.1762 21.0991C35.4516 20.888 35.5893 20.5955 35.5893 20.2219C35.5893 20.0269 35.5407 19.8645 35.4435 19.7346C35.3463 19.5883 35.2005 19.4584 35.0062 19.3446C34.8118 19.231 34.5688 19.1335 34.2772 19.0522L32.0177 18.4187C30.9324 18.11 30.0982 17.6145 29.5151 16.9323C28.932 16.2337 28.6404 15.4133 28.6404 14.4711C28.6404 13.6426 28.8509 12.9197 29.2721 12.3024C29.6933 11.6851 30.2845 11.2058 31.0457 10.8647C31.8071 10.5073 32.6817 10.3286 33.6698 10.3286C34.9656 10.3286 36.0995 10.6373 37.0714 11.2546C38.0594 11.8557 38.7559 12.7085 39.1609 13.8132L36.4639 15.0803C36.2696 14.528 35.9132 14.0893 35.3949 13.7644C34.8928 13.4233 34.3178 13.2527 33.6698 13.2527C33.2001 13.2527 32.8276 13.3502 32.5521 13.5452C32.293 13.7401 32.1634 14.0081 32.1634 14.3493C32.1634 14.528 32.212 14.6904 32.3092 14.8366C32.4064 14.9828 32.5603 15.1128 32.7708 15.2265C32.9976 15.3402 33.273 15.4458 33.5969 15.5433L35.7108 16.1769C36.8122 16.5018 37.6545 16.9972 38.2376 17.6633C38.8208 18.3131 39.1123 19.1172 39.1123 20.0757C39.1123 20.9042 38.8936 21.6271 38.4563 22.2444C38.0352 22.8617 37.4439 23.3491 36.6826 23.7064C35.9213 24.0476 35.0224 24.2182 33.9857 24.2182Z" />
+    </>
+  );
+}
+
+function AnimatedMark({
+  className = "",
+  title = "Superleap",
+  animation = "none",
+  viewBox = "0 0 144 34",
+  showWordmark = true,
+}: {
+  className?: string;
+  title?: string;
+  animation?: LogoAnimation;
+  viewBox?: string;
+  showWordmark?: boolean;
+}) {
+  const reduceMotion = useReducedMotion();
+  const mode = reduceMotion ? "none" : animation;
+
+  const interactive = mode === "leap" || mode === "glint";
+
+  return (
+    <motion.svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox={viewBox}
+      fill="none"
+      className={className}
+      role="img"
+      aria-label={title}
+      initial={mode === "assemble" ? "hidden" : "rest"}
+      animate={
+        mode === "assemble" ? "show" : mode === "wave" ? "animate" : "rest"
+      }
+      whileHover={interactive ? "hover" : undefined}
+      variants={
+        mode === "leap"
+          ? leapContainer
+          : mode === "assemble"
+            ? assembleContainer
+            : undefined
+      }
+    >
+      <title>{title}</title>
+      <g>
+        <motion.path
+          d={MARK.top}
+          fill="#4BB793"
+          variants={
+            mode === "leap"
+              ? leapTop
+              : mode === "assemble"
+                ? assembleTop
+                : mode === "wave"
+                  ? waveTop
+                  : mode === "glint"
+                    ? glintFill
+                    : undefined
+          }
+          style={{ transformOrigin: "18px 10px", transformBox: "fill-box" }}
+        />
+        <motion.path
+          d={MARK.mid}
+          fill="#4BB793"
+          variants={
+            mode === "leap"
+              ? leapMid
+              : mode === "assemble"
+                ? assembleMid
+                : mode === "wave"
+                  ? waveMid
+                  : mode === "glint"
+                    ? glintFill
+                    : undefined
+          }
+          transition={mode === "glint" ? { delay: 0.08 } : undefined}
+          style={{ transformOrigin: "14px 17px", transformBox: "fill-box" }}
+        />
+        <motion.path
+          d={MARK.bot}
+          fill="#4BB793"
+          variants={
+            mode === "leap"
+              ? leapBot
+              : mode === "assemble"
+                ? assembleBot
+                : mode === "wave"
+                  ? waveBot
+                  : mode === "glint"
+                    ? glintFill
+                    : undefined
+          }
+          transition={mode === "glint" ? { delay: 0.16 } : undefined}
+          style={{ transformOrigin: "9px 24px", transformBox: "fill-box" }}
+        />
+      </g>
+      {showWordmark ? (
+        <motion.g
+          fill="currentColor"
+          variants={
+            mode === "leap"
+              ? {
+                  rest: { opacity: 1, x: 0 },
+                  hover: { opacity: 1, x: 1.5, transition: softSpring },
+                }
+              : mode === "assemble"
+                ? {
+                    hidden: { opacity: 0, x: -8 },
+                    show: {
+                      opacity: 1,
+                      x: 0,
+                      transition: { ...softSpring, delay: 0.2 },
+                    },
+                  }
+                : undefined
+          }
+        >
+          <WordmarkPaths />
+        </motion.g>
+      ) : null}
+    </motion.svg>
+  );
+}
+
+/** Full lockup: mint mark + wordmark (official site SVG, viewBox 144×34) */
+export function LogoMark({
+  className = "",
+  title = "Superleap",
+  animation = "none",
+}: {
+  className?: string;
+  title?: string;
+  animation?: LogoAnimation;
+}) {
+  return (
+    <AnimatedMark
+      className={className}
+      title={title}
+      animation={animation}
+      showWordmark
+    />
+  );
+}
+
+export function Logo({
+  variant = "full",
+  href = "/",
+  className = "",
+  height = 28,
+  animation = "none",
+}: Props) {
+  const width = Math.round(height * (144 / 34));
+
+  let content: ReactNode;
+  if (variant === "mark") {
+    content = <Monogram title="Superleap" animation={animation} />;
+  } else if (variant === "wordmark") {
+    content = (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="27 5 117 24"
+        fill="currentColor"
+        className="text-current"
+        style={{ height, width: Math.round(height * (117 / 24)) }}
+        role="img"
+        aria-label="superleap"
+      >
+        <WordmarkPaths />
+      </svg>
+    );
+  } else {
+    content = (
+      <LogoMark className="text-current" title="Superleap" animation={animation} />
+    );
+  }
+
+  const sized =
+    variant === "mark" ? (
+      <span className="inline-flex" style={{ width: height, height }}>
+        <span className="h-full w-full [&>svg]:h-full [&>svg]:w-full">{content}</span>
+      </span>
+    ) : (
+      <span className="inline-flex" style={{ width, height }}>
+        <span className="h-full w-full [&>svg]:h-full [&>svg]:w-full">{content}</span>
+      </span>
+    );
+
+  const classes = `inline-flex items-center ${className.includes("text-") ? "" : "text-leap-fg "}${className}`;
+
+  if (href === null) {
+    return <span className={classes}>{sized}</span>;
+  }
+
+  return (
+    <Link href={href} className={`group ${classes}`} aria-label="Superleap home">
+      {sized}
+    </Link>
+  );
+}

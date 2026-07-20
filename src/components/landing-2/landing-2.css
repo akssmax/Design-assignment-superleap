@@ -1,0 +1,107 @@
+/* Landing-2 — maps to semantic tokens (theme-aware) */
+.landing-2 {
+  /* Structural brand fills stay fixed; theme flips surfaces/text */
+  --l2-accent: var(--brand-100);
+  --l2-highlight: var(--brand-100);
+  --l2-ocean: var(--brand-500);
+  --l2-gradient-start: var(--brand-gradient-start);
+  --l2-gradient-end: var(--brand-gradient-end);
+  --l2-brand-950: var(--brand-950);
+  --l2-primary: var(--brand-900);
+  --l2-surface: var(--surface-primary);
+  /* Light panel on dark efficiency band (both themes) */
+  --l2-panel: var(--gray-25);
+  /* Always light on dark brand washes — never theme-flipped text-invert */
+  --l2-text-on-brand: var(--text-on-brand);
+  --l2-text-invert: var(--text-on-brand);
+  --l2-text-primary: var(--text-primary);
+  --l2-text-tertiary: var(--text-tertiary);
+  --l2-cod-gray: var(--text-secondary);
+  --l2-emperor: var(--text-tertiary);
+  --l2-horizon: #628da4;
+  --l2-tiber: #083237;
+  --l2-mirage: #1c2c35;
+  --l2-grays-950: var(--gray-950);
+  --l2-white: var(--white);
+  --l2-radius: 4px;
+  --l2-pad: 64px;
+  --l2-nav-pad-block: 12px;
+  --l2-nav-pad-inline: 20px;
+  --l2-max: 1312px;
+  --l2-font: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  font-family: var(--l2-font);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+}
+
+[data-theme="light"] .landing-2 {
+  /* Text/marks use secondary green on light surfaces; mint stays for fills */
+  --l2-highlight: var(--brand-600);
+}
+
+.landing-2 a {
+  text-decoration: none;
+}
+
+/* Dark brand hero (Figma 13:1615) — light text on gradient */
+.landing-2-hero-gradient {
+  background: var(--gradient-hero);
+  color: var(--text-on-brand);
+}
+
+/* Light marketing hero — soft mint wash (Figma light mode) */
+[data-theme="light"] .landing-2-hero-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--surface-secondary) 0%,
+    var(--surface-primary) 55%,
+    var(--surface-tertiary) 100%
+  );
+  color: var(--text-primary);
+}
+
+/* Transparent wrapper only — frosted/solid fill lives on .landing-2-nav-bar */
+.landing-2-nav-chrome {
+  background: transparent;
+  background-color: transparent;
+}
+
+.landing-2-nav-bar {
+  background: var(--gray-950);
+  color: var(--text-on-brand);
+  /* Padding rule: equal inline inset L/R */
+  padding-block: var(--l2-nav-pad-block, 12px);
+  padding-inline: var(--l2-nav-pad-inline, 20px);
+}
+
+[data-theme="light"] .landing-2-nav-bar {
+  background: color-mix(in oklab, var(--white) 58%, transparent);
+  backdrop-filter: blur(48px);
+  -webkit-backdrop-filter: blur(48px);
+  color: var(--text-primary);
+  /* Soft elevation only — no hairline bottom border */
+  box-shadow: 0 10px 30px rgba(15, 24, 22, 0.06);
+}
+
+.landing-2-footer-gradient {
+  background: linear-gradient(
+    0deg,
+    var(--brand-gradient-start) 33.7%,
+    var(--brand-gradient-end) 82.5%
+  );
+}
+
+[data-theme="light"] .landing-2-hero-gradient svg {
+  mix-blend-mode: multiply !important;
+}
+
+@media (max-width: 768px) {
+  .landing-2 {
+    --l2-pad: 24px;
+  }
+
+  .monogram-cutout--responsive {
+    clip-path: none !important;
+  }
+}
