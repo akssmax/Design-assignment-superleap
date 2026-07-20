@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { Footer } from "@/components/Footer";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
@@ -23,7 +24,12 @@ const logos = [
   { src: "/landing-2/logo-aakash.png", alt: "Aakash" },
   { src: "/landing-2/logo-cuemath.png", alt: "Cuemath" },
   { src: "/landing-2/logo-superhealth.png", alt: "Superhealth" },
-  { src: "/landing-2/logo-arena.png", alt: "Arena" },
+  {
+    src: "/landing-2/logo-arena.png",
+    alt: "Arena Animation",
+    /** Color badge — skip white invert (was rendering as a gray block) */
+    preserveColor: true,
+  },
 ];
 
 const metrics = [
@@ -32,6 +38,14 @@ const metrics = [
   { value: "41%", label: "Reduction in First TAT", tone: "tiber" as const },
   { value: "52min", label: "Daily Time Saved", tone: "primary" as const },
 ];
+
+const stamps = [
+  { src: "/landing-2/stamp-gdpr.png", alt: "GDPR" },
+  { src: "/landing-2/stamp-hipaa.png", alt: "HIPAA" },
+  { src: "/landing-2/stamp-iso.png", alt: "ISO" },
+];
+
+const efficiencyEase = [0.22, 1, 0.36, 1] as const;
 
 function AccentButton({
   href,
@@ -46,18 +60,18 @@ function AccentButton({
 }) {
   const styles =
     variant === "accent"
-      ? "bg-[var(--l2-accent)] text-[var(--l2-primary)] shadow-[0_2px_6px_rgba(227,255,204,0.24)]"
+      ? "bg-[var(--l2-cta)] text-[var(--l2-cta-fg)] shadow-[0_2px_8px_color-mix(in_oklab,var(--l2-cta)_35%,transparent)] hover:-translate-y-0.5 hover:brightness-[1.06] hover:shadow-[0_8px_20px_color-mix(in_oklab,var(--l2-cta)_40%,transparent)]"
       : variant === "dark"
-        ? "bg-[var(--l2-primary)] text-[var(--l2-accent)]"
-        : "border border-current text-current bg-transparent";
+        ? "bg-[var(--l2-primary)] text-[var(--l2-accent)] hover:-translate-y-0.5 hover:brightness-110"
+        : "border border-current/75 bg-transparent text-current hover:-translate-y-0.5 hover:border-[var(--l2-highlight)] hover:bg-[color-mix(in_oklab,var(--l2-highlight)_16%,transparent)] hover:text-[var(--l2-highlight)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)]";
 
   const sizing =
-    size === "sm" ? "h-10 px-5 text-sm" : "h-12 px-6 text-base";
+    size === "sm" ? "h-10 px-4 text-sm" : "h-12 px-6 text-base";
 
   return (
     <a
       href={href}
-      className={`inline-flex items-center justify-center gap-2 rounded-[var(--l2-radius)] transition hover:opacity-90 ${sizing} ${styles}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-[var(--l2-radius)] transition duration-200 ease-out ${sizing} ${styles}`}
     >
       {children}
       {variant !== "outline" ? (
@@ -69,6 +83,7 @@ function AccentButton({
 
 export function Landing2Page() {
   const [heroPatternActive, setHeroPatternActive] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   return (
     <div className="landing-2 min-h-screen">
@@ -93,7 +108,7 @@ export function Landing2Page() {
           <div className="flex items-center gap-2 md:hidden">
             <a
               href="#cta"
-              className="inline-flex items-center gap-1 rounded-[var(--l2-radius)] bg-[var(--l2-accent)] px-4 py-2 text-sm text-[var(--l2-primary)]"
+              className="inline-flex items-center gap-1 rounded-[var(--l2-radius)] bg-[var(--l2-cta)] px-4 py-2 text-sm text-[var(--l2-cta-fg)]"
             >
               Book a demo
               <ArrowUpRight className="h-4 w-4" />
@@ -153,17 +168,19 @@ export function Landing2Page() {
           <h2 className="text-center text-lg font-bold tracking-[0.45px] text-[var(--l2-cod-gray)]">
             Trusted by India’s leading businesses
           </h2>
-          <div className="mt-8 grid grid-cols-2 items-center gap-6 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="landing-2-logo-strip mt-8 grid grid-cols-2 items-center gap-x-2 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
             {logos.map((logo) => (
               <div
                 key={logo.alt}
-                className="flex h-[76px] items-center justify-center border-r border-[rgba(20,20,20,0.12)] last:border-r-0"
+                className="landing-2-logo-cell flex h-[76px] items-center justify-center"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={logo.src}
                   alt={logo.alt}
-                  className="max-h-12 w-auto max-w-[140px] object-contain opacity-90"
+                  className={`landing-2-logo-img max-h-12 w-auto max-w-[140px] object-contain${
+                    logo.preserveColor ? " is-color" : ""
+                  }`}
                 />
               </div>
             ))}
@@ -172,60 +189,94 @@ export function Landing2Page() {
       </section>
 
       {/* Efficiency */}
-      <section className="relative bg-[var(--l2-brand-950)] px-[var(--l2-pad)] py-32">
-        <div className="mx-auto grid max-w-[var(--l2-max)] overflow-hidden rounded-sm lg:grid-cols-[1fr_1.35fr]">
-          <aside className="flex flex-col gap-4 border border-[var(--l2-horizon)] bg-[var(--l2-panel)] p-8 sm:p-12">
-            <div className="inline-flex w-fit items-center gap-2.5 rounded-[var(--l2-radius)] bg-[var(--l2-accent)] px-2.5 py-1.5">
-              <span className="size-3.5 rounded-sm bg-[var(--l2-ocean)]" />
-              <span className="text-sm uppercase text-gray-800">
+      <section className="landing-2-efficiency relative overflow-hidden px-[var(--l2-pad)] py-20 sm:py-24">
+        <div className="landing-2-efficiency-glow" aria-hidden />
+        <motion.div
+          className="landing-2-efficiency-grid mx-auto grid max-w-[var(--l2-max)] overflow-hidden lg:grid-cols-[1fr_1.35fr]"
+          initial={reduceMotion ? false : "hidden"}
+          whileInView="show"
+          viewport={{ once: true, amount: 0.25 }}
+          variants={{
+            hidden: {},
+            show: {
+              transition: { staggerChildren: reduceMotion ? 0 : 0.08 },
+            },
+          }}
+        >
+          <motion.aside
+            className="landing-2-efficiency-panel flex flex-col gap-5 p-8 sm:p-12"
+            variants={{
+              hidden: { opacity: 0, y: reduceMotion ? 0 : 18 },
+              show: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.55, ease: efficiencyEase },
+              },
+            }}
+          >
+            <div className="landing-2-efficiency-badge inline-flex w-fit items-center gap-2.5 rounded-[var(--l2-radius)] bg-[var(--l2-accent)] px-2.5 py-1.5">
+              <span className="landing-2-efficiency-badge-dot size-3.5 rounded-sm bg-[var(--l2-ocean)]" />
+              <span className="text-sm font-medium tracking-[0.04em] text-[var(--l2-primary)] uppercase">
                 enterprise security
               </span>
             </div>
-            <h2 className="text-4xl leading-none text-[var(--l2-primary)] sm:text-5xl">
+            <h2 className="text-4xl leading-[1.05] font-semibold tracking-[-0.02em] text-[var(--l2-primary)] sm:text-5xl">
               Bring efficiency at
               <br />
-              every level.
+              every level
+              <span className="text-[var(--l2-ocean)]">.</span>
             </h2>
-            <p className="max-w-md text-base leading-6 text-gray-600">
+            <p className="max-w-md text-base leading-6 text-[color-mix(in_oklab,var(--l2-primary)_72%,transparent)]">
               We’ve removed the friction, buried the complexity, and built speed
               into every layer. Faster admin. Lower costs. Better turnaround.
             </p>
-            <div className="mt-4 flex flex-wrap gap-6">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing-2/stamp-gdpr.png" alt="GDPR" className="size-[100px] sm:size-[120px]" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing-2/stamp-hipaa.png" alt="HIPAA" className="size-[100px] sm:size-[120px]" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/landing-2/stamp-iso.png" alt="ISO" className="size-[100px] sm:size-[120px]" />
+            <div className="mt-auto flex flex-wrap gap-5 pt-4">
+              {stamps.map((stamp, i) => (
+                <motion.img
+                  key={stamp.alt}
+                  src={stamp.src}
+                  alt={stamp.alt}
+                  className="landing-2-efficiency-stamp size-[100px] sm:size-[120px]"
+                  whileHover={
+                    reduceMotion
+                      ? undefined
+                      : { scale: 1.06, rotate: i % 2 === 0 ? -3 : 3 }
+                  }
+                  transition={{ type: "spring", stiffness: 320, damping: 18 }}
+                />
+              ))}
             </div>
-          </aside>
+          </motion.aside>
 
-          <div className="grid sm:grid-cols-2">
-            {metrics.map((metric, i) => {
-              const bg =
-                metric.tone === "primary" ? "bg-[var(--l2-primary)]" : "bg-[var(--l2-tiber)]";
-              const corners =
-                i === 1
-                  ? "rounded-tr-sm"
-                  : i === 2
-                    ? "rounded-bl-sm"
-                    : "";
-              return (
-                <div
-                  key={metric.label}
-                  className={`${bg} ${corners} flex min-h-[200px] flex-col justify-between border border-[var(--l2-horizon)] px-10 py-10`}
-                >
-                  <p className="text-[56px] leading-none text-[var(--l2-text-invert)] sm:text-[72px]">
-                    {metric.value}
-                  </p>
-                  <p className="text-base leading-6 text-[var(--l2-text-invert)]">
-                    {metric.label}
-                  </p>
+          <div className="landing-2-metrics grid sm:grid-cols-2">
+            {metrics.map((metric, i) => (
+              <motion.div
+                key={metric.label}
+                className={`landing-2-metric landing-2-metric--${metric.tone}`}
+                variants={{
+                  hidden: { opacity: 0, y: reduceMotion ? 0 : 22 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.5,
+                      ease: efficiencyEase,
+                      delay: reduceMotion ? 0 : i * 0.04,
+                    },
+                  },
+                }}
+                whileHover={reduceMotion ? undefined : { y: -4 }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              >
+                <p className="landing-2-metric-value">{metric.value}</p>
+                <div className="landing-2-metric-foot">
+                  <span className="landing-2-metric-rule" aria-hidden />
+                  <p className="landing-2-metric-label">{metric.label}</p>
                 </div>
-              );
-            })}
+              </motion.div>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* CTA — monogram cutouts top-left + bottom-right */}

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { DesignSystemPage } from "@/components/DesignSystemPage";
 
 export const metadata: Metadata = {
-  title: "Design system — Superleap colors",
+  title: "Design system — Superleap",
   description:
-    "Superleap brand, neutral, and violet color scales in OKLCH — 12-step Tailwind tokens.",
+    "Brand colors, semantic tokens, and HeroUI controls used on the landing page and social/slides designer.",
 };
 
 export default function Page() {

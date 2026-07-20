@@ -19,6 +19,7 @@ const platformLinks = [
   { label: "AI Voice Agents", href: "/#platform" },
   { label: "Social Tool", href: "/social-tool" },
   { label: "Design System", href: "/design-system" },
+  { label: "Task 2", href: "/social-tool" },
 ];
 
 const socialLinks = [
@@ -141,14 +142,14 @@ export function Footer({ id, showTheme = true }: Props) {
 
             <div className="min-w-[220px]">
               <p className="text-sm leading-5 text-text-tertiary">Follow us on:</p>
-              <div className="mt-2 flex flex-wrap gap-4">
+              <div className="mt-2 flex flex-wrap gap-3">
                 {socialLinks.map(({ label, href, icon }) => (
                   <a
                     key={label}
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="grid size-12 place-items-center bg-brand-900 text-text-on-brand transition hover:bg-brand-600 light:text-brand-accent"
+                    className="grid size-11 place-items-center rounded-[4px] border border-leap-line bg-transparent text-text-secondary transition hover:border-brand-500/45 hover:bg-brand-500/10 hover:text-brand-600 dark:border-white/15 dark:text-brand-100/85 dark:hover:border-brand-100/40 dark:hover:bg-white/8 dark:hover:text-brand-100"
                     aria-label={label}
                   >
                     {icon}

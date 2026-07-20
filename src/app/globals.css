@@ -100,7 +100,8 @@
 
   --brand-primary: var(--brand-900);
   --brand-secondary: var(--brand-600);
-  --brand-accent: var(--brand-100);
+  /* Logo green — pale mint (#E3FFCC) fails contrast on light surfaces */
+  --brand-accent: var(--brand-500);
   --brand-gradient-start: #064d4c;
   --brand-gradient-end: #091a24;
 
@@ -134,7 +135,7 @@
   --leap-soft: color-mix(in oklab, var(--gray-950) 4%, transparent);
   --leap-mist: var(--text-placeholder);
   --leap-line: color-mix(in oklab, var(--gray-950) 10%, transparent);
-  --leap-mint: var(--brand-accent);
+  --leap-mint: var(--brand-100);
   --leap-mint-deep: var(--brand-500);
   --leap-glow: color-mix(in oklab, var(--brand-500) 22%, transparent);
   --leap-glow-strong: color-mix(in oklab, var(--brand-600) 12%, transparent);
