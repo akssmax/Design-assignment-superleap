@@ -75,6 +75,13 @@ function alignClass(align: LogoAlign | TextAlign) {
   return "items-center text-center";
 }
 
+/** Keep the copy column flush with logo edges (not centered as a block). */
+function textColumnSelf(align: TextAlign) {
+  if (align === "left") return "self-start";
+  if (align === "right") return "self-end";
+  return "self-center";
+}
+
 function justifyLogo(align: LogoAlign) {
   if (align === "left") return "justify-start";
   if (align === "right") return "justify-end";
@@ -282,7 +289,7 @@ export function ProductShotPost({
             className={`flex w-full flex-col ${
               isTallPrint
                 ? "max-w-none shrink-0 justify-start"
-                : "max-w-[920px] flex-1 justify-center self-center"
+                : `max-w-[920px] flex-1 justify-center ${textColumnSelf(textAlign)}`
             } ${alignClass(textAlign)}`}
             style={
               isTallPrint
