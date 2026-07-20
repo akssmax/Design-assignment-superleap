@@ -20,7 +20,9 @@ export default function SocialToolLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`${socialDisplay.variable} ${socialBody.variable}`}>
+    <div
+      className={`${socialDisplay.variable} ${socialBody.variable} h-dvh max-h-dvh overflow-hidden`}
+    >
       {children}
     </div>
   );

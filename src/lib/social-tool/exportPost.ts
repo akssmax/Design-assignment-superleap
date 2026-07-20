@@ -13,6 +13,8 @@ type ExportOptions = {
   filename?: string;
   /** JPG fill when transparency isn't wanted */
   backgroundColor?: string;
+  /** When set, PDF is written at true physical inches (print standees, etc.) */
+  printInches?: { width: number; height: number };
 };
 
 function downloadDataUrl(dataUrl: string, filename: string) {
@@ -22,7 +24,12 @@ function downloadDataUrl(dataUrl: string, filename: string) {
   a.click();
 }
 
-function baseCaptureOptions(node: HTMLElement, width: number, height: number, scale: number) {
+function baseCaptureOptions(
+  node: HTMLElement,
+  width: number,
+  height: number,
+  scale: number,
+) {
   return {
     cacheBust: true,
     pixelRatio: scale,
@@ -44,6 +51,7 @@ export async function exportPost({
   scale = 2,
   filename = "superleap-post",
   backgroundColor = "#040c0b",
+  printInches,
 }: ExportOptions): Promise<void> {
   const opts = baseCaptureOptions(node, width, height, scale);
 
@@ -63,8 +71,20 @@ export async function exportPost({
     return;
   }
 
-  // PDF — wrap a PNG
+  // PDF — wrap a PNG; use physical inches when this is a print asset
   const png = await toPng(node, opts);
+  if (printInches) {
+    const pdf = new jsPDF({
+      orientation:
+        printInches.width >= printInches.height ? "landscape" : "portrait",
+      unit: "in",
+      format: [printInches.width, printInches.height],
+    });
+    pdf.addImage(png, "PNG", 0, 0, printInches.width, printInches.height);
+    pdf.save(`${filename}.pdf`);
+    return;
+  }
+
   const pdf = new jsPDF({
     orientation: width >= height ? "landscape" : "portrait",
     unit: "px",

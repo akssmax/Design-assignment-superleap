@@ -3,13 +3,21 @@ export type PlatformId =
   | "linkedin-landscape"
   | "instagram-square"
   | "instagram-story"
-  | "twitter";
+  | "twitter"
+  | "event-standee";
+
+export type PlatformKind = "social" | "print";
 
 export type TemplateId = "product-shot";
 
 export type PostTheme = "dark" | "light";
 
-export type PatternId = "monogram" | "monogram-soft" | "outline" | "none";
+export type PatternId =
+  | "monogram"
+  | "monogram-soft"
+  | "footer"
+  | "outline"
+  | "none";
 
 export type ProductPageId = "leads" | "hero-ui" | "pipeline";
 
@@ -101,6 +109,11 @@ export type PlatformPreset = {
   label: string;
   width: number;
   height: number;
+  kind?: PlatformKind;
+  /** Human-readable size for UI (e.g. print inches) */
+  sizeLabel?: string;
+  /** Physical print size — used for true-size PDF export */
+  printInches?: { width: number; height: number };
 };
 
 export type TemplateMeta = {
@@ -144,32 +157,52 @@ export const PLATFORM_PRESETS: PlatformPreset[] = [
     label: "LinkedIn Square",
     width: 1080,
     height: 1080,
+    kind: "social",
   },
   {
     id: "linkedin-landscape",
     label: "LinkedIn Landscape",
     width: 1200,
     height: 627,
+    kind: "social",
   },
   {
     id: "instagram-square",
     label: "Instagram Square",
     width: 1080,
     height: 1080,
+    kind: "social",
   },
   {
     id: "instagram-story",
     label: "Instagram Story",
     width: 1080,
     height: 1920,
+    kind: "social",
   },
   {
     id: "twitter",
     label: "Twitter / X",
     width: 1200,
     height: 675,
+    kind: "social",
+  },
+  {
+    id: "event-standee",
+    label: "Event Standee",
+    /** Working canvas @ ~50 DPI for 36×72 in (1:2). Export 2× ≈ 100 DPI large-format. */
+    width: 1800,
+    height: 3600,
+    kind: "print",
+    sizeLabel: "36×72 in · 3×6 ft",
+    printInches: { width: 36, height: 72 },
   },
 ];
+
+export function platformOptionLabel(p: PlatformPreset): string {
+  if (p.sizeLabel) return `${p.label} (${p.sizeLabel})`;
+  return `${p.label} (${p.width}×${p.height})`;
+}
 
 export const PATTERN_OPTIONS: PatternOption[] = [
   {
@@ -181,6 +214,11 @@ export const PATTERN_OPTIONS: PatternOption[] = [
     id: "monogram-soft",
     label: "Monogram soft",
     description: "Lighter monogram wash",
+  },
+  {
+    id: "footer",
+    label: "Footer",
+    description: "Site footer monogram strip",
   },
   {
     id: "outline",

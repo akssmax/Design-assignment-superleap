@@ -142,8 +142,9 @@
 
   --background: var(--surface-primary);
   --foreground: var(--text-primary);
-  --accent: var(--brand-accent);
-  --accent-foreground: var(--brand-primary);
+  /* Logo green (#4BB793) for primary actions in light mode */
+  --accent: var(--brand-500);
+  --accent-foreground: var(--brand-950);
   --muted: var(--text-placeholder);
   --surface: var(--leap-surface);
   --surface-foreground: var(--text-primary);

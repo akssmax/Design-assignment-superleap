@@ -14,6 +14,7 @@ import {
   Hexagon,
   Loader2,
   PanelBottom,
+  PanelsTopLeft,
   PanelTop,
   Plus,
   Shapes,
@@ -22,7 +23,6 @@ import {
 import {
   Button,
   Label,
-  Slider,
   Switch,
   TextArea,
   TextField,
@@ -32,8 +32,14 @@ import { ThemeControls } from "@/components/ThemeControls";
 import {
   InspectorSegment,
   InspectorSelect,
+  InspectorSlider,
+  InspectorTransformRow,
 } from "@/components/social-tool/InspectorControls";
-import { ProductShotPost } from "@/components/social-tool/templates/ProductShotPost";
+import {
+  ProductShotPost,
+  DEFAULT_FEATURED_TRANSFORM,
+  type FeaturedImageTransform,
+} from "@/components/social-tool/templates/ProductShotPost";
 import {
   DEFAULT_COPY,
   PATTERN_OPTIONS,
@@ -43,6 +49,7 @@ import {
   TEMPLATES,
   getPlatform,
   getTemplate,
+  platformOptionLabel,
   type LogoAlign,
   type LogoPlacement,
   type PatternId,
@@ -74,6 +81,7 @@ const ALIGN_OPTIONS = [
 const PATTERN_ICONS = {
   monogram: Hexagon,
   "monogram-soft": CircleDashed,
+  footer: PanelsTopLeft,
   outline: Shapes,
   none: Ban,
 } as const;
@@ -83,15 +91,21 @@ export function SocialToolPage() {
   const [platformId, setPlatformId] = useState<PlatformId>("linkedin-square");
   const [theme, setTheme] = useState<PostTheme>("dark");
   const [pattern, setPattern] = useState<PatternId>("monogram");
+  const [patternOpacity, setPatternOpacity] = useState(0.28);
+  const [patternScale, setPatternScale] = useState(1);
+  const [patternAnimated, setPatternAnimated] = useState(false);
   const [productPage, setProductPage] = useState<ProductPageId>("leads");
   const [typeScale, setTypeScale] = useState(1);
   const [logoScale, setLogoScale] = useState(1);
   const [logoAlign, setLogoAlign] = useState<LogoAlign>("left");
   const [logoPlacement, setLogoPlacement] = useState<LogoPlacement>("top");
   const [showLogo, setShowLogo] = useState(true);
+  const [showFeaturedImage, setShowFeaturedImage] = useState(true);
+  const [featuredTransform, setFeaturedTransform] =
+    useState<FeaturedImageTransform>(DEFAULT_FEATURED_TRANSFORM);
   const [textAlign, setTextAlign] = useState<TextAlign>("center");
-  const [headingFont, setHeadingFont] = useState<SocialFontId>("display");
-  const [subFont, setSubFont] = useState<SocialFontId>("body");
+  const [headingFont, setHeadingFont] = useState<SocialFontId>("sans");
+  const [subFont, setSubFont] = useState<SocialFontId>("sans");
   const [copy, setCopy] = useState<PostCopy>(DEFAULT_COPY["product-shot"]);
   const [exportScale, setExportScale] = useState<1 | 2>(2);
   const [exporting, setExporting] = useState<ExportFormat | null>(null);
@@ -157,6 +171,10 @@ export function SocialToolPage() {
     if (!node || exporting) return;
     setExporting(format);
     setExportOpen(false);
+    // Wait for React to unmount drag chrome before capturing
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
     try {
       await exportPost({
         node,
@@ -166,6 +184,7 @@ export function SocialToolPage() {
         scale: exportScale,
         filename,
         backgroundColor: theme === "light" ? "#f8faf9" : "#040c0b",
+        printInches: platform.printInches,
       });
     } catch (err) {
       console.error(err);
@@ -296,7 +315,7 @@ export function SocialToolPage() {
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Controls */}
-        <aside className="social-tool-aside w-full shrink-0 overflow-y-auto border-b border-leap-line lg:w-[360px] lg:border-r lg:border-b-0">
+        <aside className="social-tool-aside flex min-h-0 w-full shrink-0 flex-col overflow-y-auto overscroll-contain border-b border-leap-line lg:h-full lg:w-[360px] lg:border-r lg:border-b-0">
           {TEMPLATES.length > 1 ? (
             <section className="social-tool-section">
               <span className="social-tool-label">Template</span>
@@ -329,22 +348,156 @@ export function SocialToolPage() {
             <InspectorSelect
               label="Platform"
               value={platformId}
-              onChange={(v) => setPlatformId(v as PlatformId)}
+              onChange={(v) => {
+                const next = v as PlatformId;
+                setPlatformId(next);
+                // Tall print standees read better with matched left hierarchy
+                if (next === "event-standee") {
+                  setTextAlign("left");
+                  setLogoAlign("left");
+                }
+              }}
               options={PLATFORM_PRESETS.map((p) => ({
                 id: p.id,
-                label: `${p.label} (${p.width}×${p.height})`,
+                label: platformOptionLabel(p),
+                description:
+                  p.kind === "print"
+                    ? "Print · large-format exhibition"
+                    : undefined,
               }))}
             />
-            <InspectorSelect
-              label="Product page"
-              value={productPage}
-              onChange={(v) => setProductPage(v as ProductPageId)}
-              options={PRODUCT_PAGES.map((p) => ({
-                id: p.id,
-                label: p.label,
-                description: p.description,
-              }))}
-            />
+            {platform.kind === "print" && platform.printInches ? (
+              <p className="text-[11px] leading-4 text-text-tertiary">
+                Print layout {platform.printInches.width}×
+                {platform.printInches.height} in. PDF exports at true size;
+                PNG/JPG use the working canvas ({platform.width}×
+                {platform.height}px) × export scale.
+              </p>
+            ) : null}
+          </section>
+
+          <section className="social-tool-section space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <p className="social-tool-section-title !mb-0">Featured image</p>
+              <Switch
+                size="sm"
+                isSelected={showFeaturedImage}
+                onChange={setShowFeaturedImage}
+                aria-label="Show featured image"
+              >
+                <Switch.Content>
+                  <Switch.Control>
+                    <Switch.Thumb />
+                  </Switch.Control>
+                </Switch.Content>
+              </Switch>
+            </div>
+            {showFeaturedImage ? (
+              <div className="social-transform-panel space-y-3">
+                <InspectorSelect
+                  label="Product page"
+                  value={productPage}
+                  onChange={(v) => setProductPage(v as ProductPageId)}
+                  options={PRODUCT_PAGES.map((p) => ({
+                    id: p.id,
+                    label: p.label,
+                    description: p.description,
+                  }))}
+                />
+
+                <div className="social-transform-block">
+                  <p className="social-transform-heading">Transform</p>
+                  <div className="space-y-3">
+                    <InspectorTransformRow
+                      label="Position"
+                      fields={[
+                        {
+                          key: "x",
+                          value: featuredTransform.x,
+                          onChange: (x) =>
+                            setFeaturedTransform((prev) => ({ ...prev, x })),
+                          step: 1,
+                          precision: 1,
+                        },
+                        {
+                          key: "y",
+                          value: featuredTransform.y,
+                          onChange: (y) =>
+                            setFeaturedTransform((prev) => ({ ...prev, y })),
+                          step: 1,
+                          precision: 1,
+                        },
+                        {
+                          key: "z",
+                          value: featuredTransform.z,
+                          onChange: (z) =>
+                            setFeaturedTransform((prev) => ({ ...prev, z })),
+                          step: 5,
+                        },
+                      ]}
+                    />
+                    <InspectorSlider
+                      label="Scale"
+                      value={featuredTransform.scale}
+                      onChange={(scale) =>
+                        setFeaturedTransform((prev) => ({ ...prev, scale }))
+                      }
+                      min={0.6}
+                      max={1.6}
+                      step={0.01}
+                      format={(v) => `${v.toFixed(2)}×`}
+                    />
+                    <InspectorSlider
+                      label="Rotate X"
+                      value={featuredTransform.rotateX}
+                      onChange={(rotateX) =>
+                        setFeaturedTransform((prev) => ({ ...prev, rotateX }))
+                      }
+                      min={-60}
+                      max={60}
+                      step={1}
+                      format={(v) => `${Math.round(v)}°`}
+                    />
+                    <InspectorSlider
+                      label="Rotate Y"
+                      value={featuredTransform.rotateY}
+                      onChange={(rotateY) =>
+                        setFeaturedTransform((prev) => ({ ...prev, rotateY }))
+                      }
+                      min={-60}
+                      max={60}
+                      step={1}
+                      format={(v) => `${Math.round(v)}°`}
+                    />
+                    <InspectorSlider
+                      label="Rotate Z"
+                      value={featuredTransform.rotateZ}
+                      onChange={(rotateZ) =>
+                        setFeaturedTransform((prev) => ({ ...prev, rotateZ }))
+                      }
+                      min={-45}
+                      max={45}
+                      step={1}
+                      format={(v) => `${Math.round(v)}°`}
+                    />
+                    <InspectorSlider
+                      label="Perspective"
+                      value={featuredTransform.perspective}
+                      onChange={(perspective) =>
+                        setFeaturedTransform((prev) => ({
+                          ...prev,
+                          perspective,
+                        }))
+                      }
+                      min={400}
+                      max={2400}
+                      step={50}
+                      format={(v) => `${Math.round(v)}px`}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </section>
 
           <section className="social-tool-section space-y-3">
@@ -365,38 +518,16 @@ export function SocialToolPage() {
             </div>
             {showLogo ? (
               <>
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="social-tool-row-label">Scale</span>
-                    <span className="font-mono text-xs text-text-tertiary">
-                      {logoScale
-                        .toFixed(2)
-                        .replace(/\.00$/, "")
-                        .replace(/(\.\d)0$/, "$1")}
-                      ×
-                    </span>
-                  </div>
-                  <Slider
-                    aria-label="Logo scale"
-                    className="w-full"
-                    minValue={0.5}
-                    maxValue={3}
-                    step={0.05}
-                    value={logoScale}
-                    onChange={(next) => {
-                      const n = Array.isArray(next) ? next[0] : next;
-                      if (typeof n === "number" && !Number.isNaN(n)) {
-                        setLogoScale(n);
-                      }
-                    }}
-                  >
-                    <Label className="sr-only">Logo scale</Label>
-                    <Slider.Track>
-                      <Slider.Fill />
-                      <Slider.Thumb />
-                    </Slider.Track>
-                  </Slider>
-                </div>
+                <InspectorSlider
+                  label="Scale"
+                  value={logoScale}
+                  onChange={setLogoScale}
+                  min={0.5}
+                  max={3}
+                  step={0.05}
+                  format={(v) => `${v.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")}×`}
+                  aria-label="Logo scale"
+                />
                 <div className="social-tool-row">
                   <span className="social-tool-row-label">Placement</span>
                   <InspectorSegment
@@ -450,38 +581,18 @@ export function SocialToolPage() {
                 description: f.token,
               }))}
             />
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between gap-3">
-                <span className="social-tool-row-label">Scale</span>
-                <span className="font-mono text-xs text-text-tertiary">
-                  {typeScale
-                    .toFixed(2)
-                    .replace(/\.00$/, "")
-                    .replace(/(\.\d)0$/, "$1")}
-                  ×
-                </span>
-              </div>
-              <Slider
-                aria-label="Copy text scale"
-                className="w-full"
-                minValue={0.75}
-                maxValue={4}
-                step={0.05}
-                value={typeScale}
-                onChange={(next) => {
-                  const n = Array.isArray(next) ? next[0] : next;
-                  if (typeof n === "number" && !Number.isNaN(n)) {
-                    setTypeScale(n);
-                  }
-                }}
-              >
-                <Label className="sr-only">Copy text scale</Label>
-                <Slider.Track>
-                  <Slider.Fill />
-                  <Slider.Thumb />
-                </Slider.Track>
-              </Slider>
-            </div>
+            <InspectorSlider
+              label="Scale"
+              value={typeScale}
+              onChange={setTypeScale}
+              min={0.75}
+              max={4}
+              step={0.05}
+              format={(v) =>
+                `${v.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")}×`
+              }
+              aria-label="Copy text scale"
+            />
           </section>
 
           <section className="social-tool-section space-y-3">
@@ -496,6 +607,45 @@ export function SocialToolPage() {
                 icon: PATTERN_ICONS[p.id],
               }))}
             />
+            {pattern !== "none" ? (
+              <>
+                <InspectorSlider
+                  label="Opacity"
+                  value={patternOpacity}
+                  onChange={setPatternOpacity}
+                  min={0.05}
+                  max={1}
+                  step={0.01}
+                  format={(v) => `${Math.round(v * 100)}%`}
+                />
+                <InspectorSlider
+                  label="Scale"
+                  value={patternScale}
+                  onChange={setPatternScale}
+                  min={0.5}
+                  max={2}
+                  step={0.05}
+                  format={(v) =>
+                    `${v.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1")}×`
+                  }
+                />
+                <div className="social-tool-row">
+                  <span className="social-tool-row-label">Animation</span>
+                  <Switch
+                    size="sm"
+                    isSelected={patternAnimated}
+                    onChange={setPatternAnimated}
+                    aria-label="Pattern animation"
+                  >
+                    <Switch.Content>
+                      <Switch.Control>
+                        <Switch.Thumb />
+                      </Switch.Control>
+                    </Switch.Content>
+                  </Switch>
+                </div>
+              </>
+            ) : null}
           </section>
 
           <section className="social-tool-section space-y-3">
@@ -563,15 +713,17 @@ export function SocialToolPage() {
         {/* Preview stage */}
         <div
           ref={stageRef}
-          className="relative flex min-h-[50vh] flex-1 items-center justify-center overflow-auto bg-[color-mix(in_oklab,var(--gray-950)_6%,var(--surface-primary))] p-6 dark:bg-[color-mix(in_oklab,var(--white)_4%,var(--surface-primary))]"
+          className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto overscroll-contain bg-[color-mix(in_oklab,var(--gray-950)_6%,var(--surface-primary))] p-6 dark:bg-[color-mix(in_oklab,var(--white)_4%,var(--surface-primary))]"
         >
           <div
+            className="relative overflow-hidden"
             style={{
               width: platform.width * previewScale,
               height: platform.height * previewScale,
             }}
           >
             <div
+              className="origin-top-left"
               style={{
                 width: platform.width,
                 height: platform.height,
@@ -585,12 +737,20 @@ export function SocialToolPage() {
                   height={platform.height}
                   copy={copy}
                   pattern={pattern}
+                  patternOpacity={patternOpacity}
+                  patternScale={patternScale}
+                  patternAnimated={patternAnimated && !exporting}
                   productPage={productPage}
                   typeScale={typeScale}
                   logoScale={logoScale}
                   logoAlign={logoAlign}
                   logoPlacement={logoPlacement}
                   showLogo={showLogo}
+                  showFeaturedImage={showFeaturedImage}
+                  featuredTransform={featuredTransform}
+                  onFeaturedTransformChange={setFeaturedTransform}
+                  previewScale={previewScale}
+                  interactive={!exporting}
                   textAlign={textAlign}
                   headingFont={headingFont}
                   subFont={subFont}

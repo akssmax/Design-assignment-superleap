@@ -145,18 +145,72 @@
   justify-content: flex-end;
 }
 
+.social-post-pattern--footer {
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0;
+}
+
+.social-post-footer-pattern {
+  width: 140%;
+  max-width: none;
+  transform: translateY(18%);
+  color: inherit;
+}
+
+.social-post-pattern-scale {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+  justify-content: center;
+  will-change: transform;
+}
+
+.social-post-pattern--outline .social-post-pattern-scale {
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .social-post-outline-img {
   width: 70%;
   max-width: 900px;
   height: auto;
-  opacity: 0.35;
+  opacity: 1;
   object-fit: contain;
   transform: translate(12%, 8%);
 }
 
 .social-post--light .social-post-outline-img {
-  opacity: 0.2;
   filter: brightness(0.4);
+}
+
+.social-post-pattern.is-animated .social-post-pattern-scale {
+  animation: social-pattern-breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes social-pattern-breathe {
+  0%,
+  100% {
+    transform: scale(var(--sp-pattern-scale, 1));
+  }
+  50% {
+    transform: scale(calc(var(--sp-pattern-scale, 1) * 1.03));
+  }
+}
+
+.social-post-pattern--footer.is-animated .social-post-pattern-scale {
+  animation-name: social-footer-breathe;
+}
+
+@keyframes social-footer-breathe {
+  0%,
+  100% {
+    transform: scale(var(--sp-pattern-scale, 1));
+  }
+  50% {
+    transform: scale(calc(var(--sp-pattern-scale, 1) * 1.02));
+  }
 }
 
 .social-post-product {
@@ -184,36 +238,184 @@
   display: flex;
   height: 100%;
   flex-direction: column;
+  overflow: visible;
 }
 
 .social-post-text-zone {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   overflow: hidden;
+}
+
+.social-post-text-zone--tall {
+  justify-content: flex-start;
+}
+
+.social-post-product-viewport {
+  position: relative;
+  width: calc(100% + var(--sp-pad));
+  margin-right: calc(var(--sp-pad) * -1);
+  overflow: visible;
+  pointer-events: none;
+  perspective: var(--fi-perspective, 1400px);
+  perspective-origin: 50% 0%;
+}
+
+.social-post-product-viewport.is-editable {
+  pointer-events: auto;
+}
+
+.social-post-product-viewport.is-editable .social-post-product-frame {
+  overflow: visible;
 }
 
 .social-post-product-frame {
   position: relative;
-  width: calc(100% + var(--sp-pad));
-  margin-right: calc(var(--sp-pad) * -1);
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   background: var(--gray-25);
   box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
+  transform-origin: center top;
+  transform-style: preserve-3d;
+  transform: translate3d(
+      var(--fi-x, 0px),
+      var(--fi-y, 0px),
+      var(--fi-z, 0px)
+    )
+    rotateX(var(--fi-rx, 0deg))
+    rotateY(var(--fi-ry, 0deg))
+    rotateZ(var(--fi-rz, 0deg))
+    scale(var(--fi-scale, 1));
+  will-change: transform;
+}
+
+.social-post-product-frame.is-hot {
+  outline: 2px solid color-mix(in oklab, var(--brand-500) 85%, white);
+  outline-offset: 3px;
+}
+
+.social-post-product-frame.is-dragging {
+  cursor: grabbing;
 }
 
 .social-post-product-frame .social-post-product-inner {
   height: auto;
+  pointer-events: none;
+}
+
+.social-fi-chrome {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: grab;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.social-fi-chrome.is-visible {
+  opacity: 1;
+}
+
+.social-fi-chrome:active {
+  cursor: grabbing;
+}
+
+.social-fi-bounds {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid color-mix(in oklab, var(--brand-500) 90%, white);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, white 35%, transparent);
+  pointer-events: none;
+}
+
+.social-fi-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--surface-primary, #fff);
+  border: 1.5px solid var(--brand-500);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.social-fi-handle--nw {
+  top: 2px;
+  left: 2px;
+}
+.social-fi-handle--ne {
+  top: 2px;
+  right: 2px;
+}
+.social-fi-handle--sw {
+  bottom: 2px;
+  left: 2px;
+}
+.social-fi-handle--se {
+  bottom: 2px;
+  right: 2px;
+}
+.social-fi-handle--n {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.social-fi-handle--s {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.social-fi-handle--w {
+  top: 50%;
+  left: 2px;
+  transform: translateY(-50%);
+}
+.social-fi-handle--e {
+  top: 50%;
+  right: 2px;
+  transform: translateY(-50%);
+}
+
+.social-fi-move-hint {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--gray-950) 78%, transparent);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.social-fi-chrome.is-visible .social-fi-move-hint {
+  opacity: 1;
 }
 
 /* Tool chrome (not part of export) */
 .social-tool {
-  height: 100svh;
-  max-height: 100svh;
+  height: 100%;
+  max-height: 100%;
   overflow: hidden;
   background: var(--surface-primary);
   color: var(--text-primary);
+}
+
+html:has(.social-tool),
+html:has(.social-tool) body {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .social-tool-aside {
@@ -238,6 +440,135 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-tertiary);
+}
+
+.social-tool-accordion {
+  width: 100%;
+}
+
+.social-tool-accordion [data-slot="accordion-trigger"] {
+  width: 100%;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.social-tool-accordion [data-slot="accordion-item"]::after {
+  background: var(--leap-line);
+}
+
+/* Figma-like transform inspector */
+.social-transform-heading {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.social-transform-block {
+  padding-top: 0.25rem;
+}
+
+.social-transform-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.social-transform-row-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.social-transform-lock {
+  width: 11px;
+  height: 11px;
+  color: var(--text-tertiary);
+}
+
+.social-transform-axes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.social-axis-field {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.2rem;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--gray-950) 8%, var(--surface-primary));
+  padding: 0.2rem 0.45rem 0.2rem 0.4rem;
+  border: 1px solid transparent;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.dark .social-axis-field {
+  background: color-mix(in oklab, var(--white) 8%, var(--surface-primary));
+}
+
+.social-axis-field:focus-within {
+  border-color: color-mix(in oklab, var(--brand-500) 55%, transparent);
+  background: color-mix(in oklab, var(--brand-500) 8%, var(--surface-primary));
+}
+
+.social-axis-field--solo {
+  justify-self: stretch;
+}
+
+.social-axis-letter {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #5b8def;
+}
+
+.social-axis-field--x .social-axis-letter {
+  color: #e06c75;
+}
+.social-axis-field--y .social-axis-letter {
+  color: #4bb793;
+}
+.social-axis-field--z .social-axis-letter {
+  color: #5b8def;
+}
+
+.social-axis-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--text-primary);
+  outline: none;
+}
+
+.social-axis-input::-webkit-outer-spin-button,
+.social-axis-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.social-axis-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .social-tool-row {
@@ -282,7 +613,16 @@
 }
 
 .social-tool-segment [data-selected="true"],
+.social-tool-segment [aria-checked="true"],
 .social-tool-segment [aria-pressed="true"] {
+  background-color: var(--brand-500);
+  color: var(--brand-950);
+}
+
+.social-tool-segment [data-selected="true"]:hover,
+.social-tool-segment [aria-checked="true"]:hover,
+.social-tool-segment [aria-pressed="true"]:hover {
+  background-color: color-mix(in oklab, var(--brand-500) 88%, var(--brand-950));
   color: var(--brand-950);
 }
 
