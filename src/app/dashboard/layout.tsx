@@ -11,7 +11,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div data-theme="light" className="min-h-svh bg-neutral-50">
+    <div className="min-h-svh bg-surface-primary text-text-primary">
       {children}
     </div>
   );

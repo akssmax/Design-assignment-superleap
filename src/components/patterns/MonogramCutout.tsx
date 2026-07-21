@@ -13,7 +13,7 @@ export type MonogramCutoutCorner =
  */
 export type MonogramCutoutDepth = number;
 
-const DEFAULT_CUTOUTS: MonogramCutoutCorner[] = ["top-left", "bottom-right"];
+const DEFAULT_CUTOUTS: MonogramCutoutCorner[] = ["top-right", "bottom-left"];
 const DEFAULT_DEPTH = 14;
 
 /**
@@ -63,7 +63,7 @@ type Props = {
   children: ReactNode;
   className?: string;
   id?: string;
-  /** Which corners get the monogram diagonal. Default: top-left + bottom-right (Figma CTA). */
+  /** Which corners get the monogram diagonal. Default: top-right + bottom-left (Figma CTA). */
   cutouts?: readonly MonogramCutoutCorner[];
   /** Cut depth as % of width/height (default 14). */
   depth?: MonogramCutoutDepth;

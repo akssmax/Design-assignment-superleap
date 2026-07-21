@@ -1,12 +1,15 @@
+import { Chip } from "@heroui/react";
 import { chipClass } from "./skeletons";
 import { interestTone, type LeadInterest } from "@/lib/dashboard/types";
 
 export function InterestChip({ interest }: { interest: LeadInterest }) {
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${chipClass(interestTone[interest])}`}
+    <Chip
+      size="sm"
+      variant="soft"
+      className={`${chipClass(interestTone[interest])} border-0`}
     >
-      {interest}
-    </span>
+      <Chip.Label>{interest}</Chip.Label>
+    </Chip>
   );
 }

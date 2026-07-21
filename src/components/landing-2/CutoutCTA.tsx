@@ -9,7 +9,7 @@ type Props = {
   title?: string;
   description?: string;
   children?: ReactNode;
-  /** Default Figma CTA: top-left + bottom-right */
+  /** Default Figma CTA: top-right + bottom-left */
   cutouts?: readonly MonogramCutoutCorner[];
   depth?: number;
   className?: string;
@@ -24,7 +24,7 @@ export function CutoutCTA({
   title = "See Superleap in action",
   description = "Discover why Superleap is the #1 enterprise-grade AI CRM for modern revenue teams.",
   children,
-  cutouts = ["top-left", "bottom-right"],
+  cutouts = ["top-right", "bottom-left"],
   depth = 14,
   className = "",
 }: Props) {

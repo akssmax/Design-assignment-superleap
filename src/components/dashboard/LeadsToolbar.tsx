@@ -5,105 +5,90 @@ import {
   Download,
   Filter,
   Plus,
-  Search,
   Settings2,
   ArrowUpDown,
 } from "lucide-react";
+import { Breadcrumbs, Button, SearchField } from "@heroui/react";
+import { ThemeControls } from "@/components/ThemeControls";
 
 type Props = {
   search: string;
   onSearchChange: (value: string) => void;
+  showThemeControls?: boolean;
 };
 
-export function LeadsToolbar({ search, onSearchChange }: Props) {
+export function LeadsToolbar({
+  search,
+  onSearchChange,
+  showThemeControls = false,
+}: Props) {
   return (
-    <div className="shrink-0 space-y-3 border-b border-dash-line bg-white px-3 pt-3 pb-3 sm:space-y-4 sm:px-5 sm:pt-4">
+    <div className="shrink-0 space-y-3 border-b border-dash-line bg-dash-surface px-3 pt-3 pb-3 sm:space-y-4 sm:px-5 sm:pt-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        <nav
-          className="flex shrink-0 items-center gap-1.5 text-sm text-neutral-500"
-          aria-label="Breadcrumb"
-        >
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 font-medium text-brand-950"
-          >
+        <Breadcrumbs className="shrink-0" aria-label="Breadcrumb">
+          <Breadcrumbs.Item href="#">
             Leads
-            <ChevronDown className="size-3.5 opacity-60" aria-hidden />
-          </button>
-          <span className="text-neutral-300">/</span>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 font-medium text-brand-950"
-          >
+            <ChevronDown className="ml-1 size-3.5 opacity-60" aria-hidden />
+          </Breadcrumbs.Item>
+          <Breadcrumbs.Item href="#">
             All Leads
-            <ChevronDown className="size-3.5 opacity-60" aria-hidden />
-          </button>
-        </nav>
+            <ChevronDown className="ml-1 size-3.5 opacity-60" aria-hidden />
+          </Breadcrumbs.Item>
+        </Breadcrumbs>
 
-        <div className="relative w-full min-w-0 flex-1 sm:mx-auto sm:max-w-md">
-          <Search
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-neutral-400"
-            aria-hidden
-          />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search...."
-            className="h-9 w-full rounded-lg border border-dash-line bg-neutral-50 pr-3 pl-9 text-sm text-brand-950 outline-none placeholder:text-neutral-400 focus:border-accent-sky/40 focus:ring-2 focus:ring-accent-sky/15"
-            aria-label="Search leads"
-          />
-        </div>
+        <SearchField
+          fullWidth
+          value={search}
+          onChange={onSearchChange}
+          aria-label="Search leads"
+          className="w-full min-w-0 flex-1 sm:mx-auto sm:max-w-md"
+        >
+          <SearchField.Group>
+            <SearchField.SearchIcon />
+            <SearchField.Input placeholder="Search...." />
+            <SearchField.ClearButton />
+          </SearchField.Group>
+        </SearchField>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="hidden h-9 items-center rounded-lg border border-dash-line bg-white px-3 text-sm font-medium text-brand-950 transition hover:bg-neutral-50 sm:inline-flex"
+          <Button
+            variant="secondary"
+            size="sm"
+            className="hidden sm:inline-flex"
           >
             Save as Smartboard
-          </button>
-          <button
-            type="button"
-            aria-label="Download"
-            className="inline-flex size-9 items-center justify-center rounded-lg border border-dash-line bg-white text-brand-950 transition hover:bg-neutral-50"
-          >
+          </Button>
+          <Button isIconOnly variant="secondary" size="sm" aria-label="Download">
             <Download className="size-4" />
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-950 px-3.5 text-sm font-semibold text-white transition hover:bg-brand-900 sm:flex-initial"
-          >
+          </Button>
+          <Button variant="primary" size="sm" className="flex-1 sm:flex-initial">
             <Plus className="size-4" aria-hidden />
-            <span className="sm:inline">Create Lead</span>
-          </button>
+            Create Lead
+          </Button>
+          {showThemeControls ? (
+            <div className="hidden md:block">
+              <ThemeControls compact />
+            </div>
+          ) : null}
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-2 overflow-x-auto">
         <div className="flex items-center gap-1 sm:gap-2">
-          <button
-            type="button"
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-medium whitespace-nowrap text-neutral-600 transition hover:bg-neutral-50 sm:px-2.5"
-          >
+          <Button variant="ghost" size="sm">
             <ArrowUpDown className="size-3.5" aria-hidden />
             Sort
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-medium whitespace-nowrap text-neutral-600 transition hover:bg-neutral-50 sm:px-2.5"
-          >
+          </Button>
+          <Button variant="ghost" size="sm">
             <Filter className="size-3.5" aria-hidden />
             Filter
-          </button>
+          </Button>
         </div>
-        <button
-          type="button"
-          className="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-sm font-medium whitespace-nowrap text-neutral-600 transition hover:bg-neutral-50 sm:px-2.5"
-        >
+        <Button variant="ghost" size="sm">
           <Settings2 className="size-3.5" aria-hidden />
           <span className="hidden sm:inline">View Settings</span>
           <span className="sm:hidden">View</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

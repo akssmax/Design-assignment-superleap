@@ -156,7 +156,7 @@ export function Landing2Page() {
 
           <div className="aspect-[3/4] w-full overflow-hidden rounded-[var(--l2-radius)] shadow-2xl shadow-black/40 ring-1 ring-black/10 sm:aspect-[4/3] md:aspect-video">
             <div className="h-full w-full bg-neutral-50">
-              <DashboardShell className="h-full" />
+              <DashboardShell className="h-full" themeLock="light" showThemeControls={false} />
             </div>
           </div>
         </div>

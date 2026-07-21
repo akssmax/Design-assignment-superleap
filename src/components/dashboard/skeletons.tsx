@@ -14,14 +14,14 @@ export function chipClass(tone: ChipTone) {
 }
 
 export function SidebarSkeletonRow({
-  markerClass = "bg-neutral-300",
+  markerClass = "bg-neutral-300 dark:bg-neutral-600",
 }: {
   markerClass?: string;
 }) {
   return (
     <div className="flex items-center gap-2.5 rounded-md px-2.5 py-2" aria-hidden>
       <span className={`size-2.5 shrink-0 rounded-sm ${markerClass}`} />
-      <span className="h-2.5 flex-1 rounded-full bg-neutral-200/80 blur-[1.5px]" />
+      <span className="h-2.5 flex-1 rounded-full bg-surface-border/60 blur-[1.5px]" />
     </div>
   );
 }
@@ -29,8 +29,8 @@ export function SidebarSkeletonRow({
 export function IconSkeletonRow() {
   return (
     <div className="flex items-center gap-2.5 rounded-md px-2.5 py-2" aria-hidden>
-      <span className="size-4 shrink-0 rounded bg-neutral-200/90" />
-      <span className="h-2.5 flex-1 rounded-full bg-neutral-200/70 blur-[1.5px]" />
+      <span className="size-4 shrink-0 rounded bg-surface-border/70" />
+      <span className="h-2.5 flex-1 rounded-full bg-surface-border/50 blur-[1.5px]" />
     </div>
   );
 }

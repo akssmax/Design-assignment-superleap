@@ -103,7 +103,11 @@ export function ProductPreview({ page, frameWidth }: Props) {
 
   return (
     <div style={{ width: shellWidth, height: 720 }}>
-      <DashboardShell className="h-full w-full" />
+      <DashboardShell
+        className="h-full w-full"
+        themeLock="light"
+        showThemeControls={false}
+      />
     </div>
   );
 }

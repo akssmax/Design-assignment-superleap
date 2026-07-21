@@ -73,6 +73,8 @@
   --dash-active-bar: var(--accent-sky);
   --dash-email: var(--accent-sky);
   --dash-line: color-mix(in oklab, var(--gray-950) 8%, transparent);
+  --dash-surface: var(--white);
+  --dash-hover: color-mix(in oklab, var(--gray-950) 4%, transparent);
 
   /* Fixed brand accents (same in both themes) */
   --brand-accent-2: #ff6140;
@@ -150,6 +152,21 @@
   --surface: var(--leap-surface);
   --surface-foreground: var(--text-primary);
   --border: var(--leap-line);
+
+  /* Dashboard CRM — light (also resets when themeLock=light under dark html) */
+  --dash-sidebar: #eef2f5;
+  --dash-active: var(--accent-sky-soft);
+  --dash-active-bar: var(--accent-sky);
+  --dash-email: var(--accent-sky);
+  --dash-line: color-mix(in oklab, var(--gray-950) 8%, transparent);
+  --dash-surface: var(--white);
+  --dash-hover: color-mix(in oklab, var(--gray-950) 4%, transparent);
+  --accent-sky-soft: #e8f4fc;
+  --accent-blue-soft: #e6f0ff;
+  --accent-amber-soft: #fff4e0;
+  --accent-violet-soft: #f3e8ff;
+  --accent-rose-soft: #ffe8ec;
+  --accent-sand-soft: #f5ede3;
 }
 
 [data-theme="dark"] {
@@ -213,6 +230,22 @@
   --surface: var(--leap-surface);
   --surface-foreground: var(--text-primary);
   --border: var(--leap-line);
+
+  /* Dashboard CRM shell — dark surfaces + soft chip fills */
+  --dash-sidebar: color-mix(in oklab, var(--brand-900) 72%, var(--gray-950));
+  --dash-active: color-mix(in oklab, var(--accent-sky) 22%, transparent);
+  --dash-active-bar: var(--accent-sky);
+  --dash-email: #7ec8f0;
+  --dash-line: color-mix(in oklab, var(--white) 10%, transparent);
+  --dash-surface: var(--surface-secondary);
+  --dash-hover: color-mix(in oklab, var(--white) 5%, transparent);
+
+  --accent-sky-soft: color-mix(in oklab, var(--accent-sky) 22%, transparent);
+  --accent-blue-soft: color-mix(in oklab, var(--accent-blue) 22%, transparent);
+  --accent-amber-soft: color-mix(in oklab, var(--accent-amber) 22%, transparent);
+  --accent-violet-soft: color-mix(in oklab, var(--accent-violet) 22%, transparent);
+  --accent-rose-soft: color-mix(in oklab, var(--accent-rose) 22%, transparent);
+  --accent-sand-soft: color-mix(in oklab, var(--accent-sand) 22%, transparent);
 }
 
 @theme inline {
@@ -301,6 +334,8 @@
   --color-dash-active-bar: var(--dash-active-bar);
   --color-dash-email: var(--dash-email);
   --color-dash-line: var(--dash-line);
+  --color-dash-surface: var(--dash-surface);
+  --color-dash-hover: var(--dash-hover);
 
   --color-leap-bg: var(--leap-bg);
   --color-leap-fg: var(--leap-fg);

@@ -1,4 +1,5 @@
 import { Globe, Link2, Mail, Megaphone, Share2, Newspaper } from "lucide-react";
+import { Chip } from "@heroui/react";
 import { chipClass } from "./skeletons";
 import { sourceTone, type LeadSource } from "@/lib/dashboard/types";
 
@@ -14,11 +15,13 @@ const sourceIcon: Record<LeadSource, typeof Megaphone> = {
 export function SourceChip({ source }: { source: LeadSource }) {
   const Icon = sourceIcon[source];
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium whitespace-nowrap ${chipClass(sourceTone[source])}`}
+    <Chip
+      size="sm"
+      variant="soft"
+      className={`${chipClass(sourceTone[source])} border-0`}
     >
       <Icon className="size-3 shrink-0 opacity-80" aria-hidden />
-      {source}
-    </span>
+      <Chip.Label>{source}</Chip.Label>
+    </Chip>
   );
 }

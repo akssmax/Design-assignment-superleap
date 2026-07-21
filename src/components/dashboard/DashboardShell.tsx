@@ -1,20 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
+import { Button } from "@heroui/react";
 import { Logo } from "@/components/Logo";
+import { ThemeControls } from "@/components/ThemeControls";
 import { Sidebar } from "./Sidebar";
 import { LeadsTable } from "./LeadsTable";
 
 type Props = {
   /** Full viewport app shell, or fill a parent frame (hero preview). */
   className?: string;
+  /**
+   * Lock theme for embedded product mocks (landing / social preview).
+   * Omit on `/dashboard` so system / ThemeControls apply.
+   */
+  themeLock?: "light" | "dark";
+  /** Show theme switcher (default true when unlocked). */
+  showThemeControls?: boolean;
 };
 
-export function DashboardShell({ className = "h-svh" }: Props) {
+export function DashboardShell({
+  className = "h-svh",
+  themeLock,
+  showThemeControls,
+}: Props) {
   const [navOpen, setNavOpen] = useState(false);
+  const themeControlsVisible =
+    showThemeControls ?? themeLock === undefined;
 
-  // Close drawer on resize to desktop
   useEffect(() => {
     const onResize = () => {
       if (window.matchMedia("(min-width: 768px)").matches) {
@@ -27,41 +41,40 @@ export function DashboardShell({ className = "h-svh" }: Props) {
 
   return (
     <div
-      data-theme="light"
-      className={`relative flex overflow-hidden bg-neutral-50 text-brand-950 ${className}`}
+      {...(themeLock ? { "data-theme": themeLock } : {})}
+      className={`relative flex overflow-hidden bg-surface-primary text-text-primary ${className}`}
     >
-      {/* Mobile drawer backdrop */}
       {navOpen ? (
         <button
           type="button"
-          className="absolute inset-0 z-30 bg-brand-950/40 md:hidden"
+          className="absolute inset-0 z-30 bg-brand-950/45 md:hidden dark:bg-black/55"
           aria-label="Close navigation"
           onClick={() => setNavOpen(false)}
         />
       ) : null}
 
-      <Sidebar
-        open={navOpen}
-        onClose={() => setNavOpen(false)}
-      />
+      <Sidebar open={navOpen} onClose={() => setNavOpen(false)} />
 
-      <main className="flex min-w-0 flex-1 flex-col bg-white">
-        {/* Mobile top bar */}
-        <div className="flex h-12 shrink-0 items-center gap-3 border-b border-dash-line bg-dash-sidebar px-3 md:hidden">
-          <button
-            type="button"
-            className="inline-flex size-9 items-center justify-center rounded-lg border border-dash-line bg-white text-brand-950"
+      <main className="flex min-w-0 flex-1 flex-col bg-dash-surface">
+        <div className="flex h-12 shrink-0 items-center gap-2 border-b border-dash-line bg-dash-sidebar px-3 md:hidden">
+          <Button
+            isIconOnly
+            variant="secondary"
+            size="sm"
             aria-label={navOpen ? "Close menu" : "Open menu"}
             aria-expanded={navOpen}
-            onClick={() => setNavOpen((v) => !v)}
+            onPress={() => setNavOpen((v) => !v)}
           >
-            {navOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-          </button>
-          <Logo href={null} height={22} className="text-brand-950" />
-          <span className="ml-auto text-xs font-medium text-neutral-500">Leads</span>
+            <Menu className="size-4" />
+          </Button>
+          <Logo href={null} height={22} className="text-text-primary" />
+          <span className="ml-auto text-xs font-medium text-text-tertiary">
+            Leads
+          </span>
+          {themeControlsVisible ? <ThemeControls compact /> : null}
         </div>
 
-        <LeadsTable />
+        <LeadsTable showThemeControls={themeControlsVisible} />
       </main>
     </div>
   );
