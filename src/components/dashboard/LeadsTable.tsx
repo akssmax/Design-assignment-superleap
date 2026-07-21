@@ -45,9 +45,10 @@ function SelectCheckbox({
       isSelected={checked}
       onChange={onChange}
       aria-label={ariaLabel}
+      variant="secondary"
       className="size-auto"
     >
-      <Checkbox.Control>
+      <Checkbox.Control className="border border-surface-border bg-dash-surface shadow-none dark:border-white/40 dark:bg-white/8">
         <Checkbox.Indicator />
       </Checkbox.Control>
     </Checkbox>
@@ -181,11 +182,14 @@ export function LeadsTable({
           <table className="w-full min-w-[720px] border-collapse text-left text-sm md:min-w-[960px]">
             <thead>
               {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="bg-surface-primary/80">
+                <tr
+                  key={hg.id}
+                  className="bg-dash-sidebar dark:bg-white/[0.04]"
+                >
                   {hg.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="border-b border-dash-line px-3 py-2.5 text-[10px] font-bold tracking-[0.06em] text-text-tertiary uppercase"
+                      className="border-b border-dash-line px-3 py-2.5 text-[10px] font-bold tracking-[0.06em] text-text-secondary uppercase dark:text-text-tertiary"
                       style={{
                         width:
                           header.getSize() !== 150 ? header.getSize() : undefined,

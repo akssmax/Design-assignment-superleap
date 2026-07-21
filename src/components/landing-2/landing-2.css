@@ -12,8 +12,10 @@
   --l2-brand-950: var(--brand-950);
   --l2-primary: var(--brand-900);
   --l2-surface: var(--surface-primary);
-  /* Light panel on dark efficiency band (both themes) */
-  --l2-panel: var(--gray-25);
+  /* Efficiency left panel — elevated dark in dark mode, white in light */
+  --l2-panel: color-mix(in oklab, var(--brand-900) 82%, var(--gray-950));
+  --l2-panel-fg: var(--gray-50);
+  --l2-panel-muted: color-mix(in oklab, var(--gray-100) 72%, transparent);
   /* Always light on dark brand washes — never theme-flipped text-invert */
   --l2-text-on-brand: var(--text-on-brand);
   --l2-text-invert: var(--text-on-brand);
@@ -44,6 +46,9 @@
   --l2-highlight: var(--brand-600);
   --l2-cta: var(--brand-500);
   --l2-cta-fg: var(--brand-950);
+  --l2-panel: var(--white);
+  --l2-panel-fg: var(--brand-900);
+  --l2-panel-muted: color-mix(in oklab, var(--brand-900) 72%, transparent);
 }
 
 .landing-2 a {
@@ -215,7 +220,7 @@
 }
 
 [data-theme="light"] .landing-2-efficiency-panel {
-  background: var(--white);
+  background: var(--l2-panel);
 }
 
 @media (max-width: 1023px) {

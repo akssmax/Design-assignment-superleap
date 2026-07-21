@@ -155,8 +155,8 @@ export function Landing2Page() {
           </div>
 
           <div className="aspect-[3/4] w-full overflow-hidden rounded-[var(--l2-radius)] shadow-2xl shadow-black/40 ring-1 ring-black/10 sm:aspect-[4/3] md:aspect-video">
-            <div className="h-full w-full bg-neutral-50">
-              <DashboardShell className="h-full" themeLock="light" showThemeControls={false} />
+            <div className="h-full w-full bg-dash-surface">
+              <DashboardShell className="h-full" showThemeControls={false} />
             </div>
           </div>
         </div>
@@ -216,17 +216,17 @@ export function Landing2Page() {
           >
             <div className="landing-2-efficiency-badge inline-flex w-fit items-center gap-2.5 rounded-[var(--l2-radius)] bg-[var(--l2-accent)] px-2.5 py-1.5">
               <span className="landing-2-efficiency-badge-dot size-3.5 rounded-sm bg-[var(--l2-ocean)]" />
-              <span className="text-sm font-medium tracking-[0.04em] text-[var(--l2-primary)] uppercase">
+              <span className="text-sm font-medium tracking-[0.04em] text-brand-950 uppercase">
                 enterprise security
               </span>
             </div>
-            <h2 className="text-4xl leading-[1.05] font-semibold tracking-[-0.02em] text-[var(--l2-primary)] sm:text-5xl">
+            <h2 className="text-4xl leading-[1.05] font-semibold tracking-[-0.02em] text-[var(--l2-panel-fg)] sm:text-5xl">
               Bring efficiency at
               <br />
               every level
               <span className="text-[var(--l2-ocean)]">.</span>
             </h2>
-            <p className="max-w-md text-base leading-6 text-[color-mix(in_oklab,var(--l2-primary)_72%,transparent)]">
+            <p className="max-w-md text-base leading-6 text-[var(--l2-panel-muted)]">
               We’ve removed the friction, buried the complexity, and built speed
               into every layer. Faster admin. Lower costs. Better turnaround.
             </p>
